@@ -9,7 +9,7 @@
  (fn [_ _]
    (assoc {} :text "Hello world"
           :last-item-id 1
-          :items '())))
+          :items '({:id 0 :text "test" :done false}))))
 
 (defn add-to-items [db text]
   (cons (:items db) {:id (:last-item-id db) :text text :done false}))

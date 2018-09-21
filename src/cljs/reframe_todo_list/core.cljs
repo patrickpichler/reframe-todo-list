@@ -10,22 +10,21 @@
             [secretary.core :as secretary])
   (:import goog.History))
 
-; the navbar components are implemented via baking-soda [1]
-; library that provides a ClojureScript interface for Reactstrap [2]
-; Bootstrap 4 components.
-; [1] https://github.com/gadfly361/baking-soda
-; [2] http://reactstrap.github.io/
+(defn render-item [{id :id text :text done :done}]
+  [:div {:key id} text])
 
-(defn render-item [item]
-  (let [{name :name
-         done :done} item]
-  [:div name]))
+(defn render-input []
+  (let [input-text (r/atom "")]
+    [:div [:input {:type "text"
+                   ; :value @input-text
+                   :on-change #(reset! input-text (-> % .-target .-value))}]
+     [:button {:on-click #((do (rf/dispatch [:add-item @input-text])
+                               (reset! input-text "")))}
+      "Add"]]))
 
 (defn home-page []
   [:div.container
-   [:div.row>div.col-sm-12
-    [:h2.alert.alert-info "Tip: try pressing CTRL+H to open re-frame tracing menu"]]
-   [:div [:input]]
+   (render-input)
    (when-let [items @(rf/subscribe [:items])]
      [:div (map render-item items)])])
 
@@ -41,4 +40,4 @@
 
 (defn init! []
   (rf/dispatch [:initialize-db])
-  (ajax/load-interceptors!))
+  (mount-components))
