@@ -3,10 +3,14 @@
             [reframe-todo-list.views :as views]
             [reframe-todo-list.events]
             [reagent.core :as r]
-            [re-frame.core :as rf]))
+            [re-frame.core :as rf]
+            [material-ui :as mui]))
 
 (defn page []
   [:div
+   [:> mui/AppBar {:position :static} 
+    [:> mui/Toolbar[:> mui/Typography {:variant :title
+                        :color :inherit} "Todo list"]]]
    [views/home-page]])
 
 ;; -------------------------
