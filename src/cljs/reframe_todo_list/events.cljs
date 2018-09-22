@@ -9,16 +9,19 @@
  (fn [_ _]
    (assoc {} :text "Hello world"
           :last-item-id 1
-          :items '({:id 0 :text "test" :done false}))))
-
-(defn add-to-items [db text]
-  (cons (:items db) {:id (:last-item-id db) :text text :done false}))
+          :items {})))
 
 (rf/reg-event-db
  :add-item
- (fn [db [_ text]]
-   (assoc db :items (add-to-items db text)
-          :last-item-id (inc (:last-item-id db)))))
+ (fn [{last-id :last-item-id items :items :as db} [_ text]]
+   (assoc db
+          :items (assoc items last-id {:id last-id :text text :done false})
+          :last-item-id (inc last-id))))
+
+(rf/reg-event-db
+ :set-item-done
+ (fn [db [_ id done]]
+   (update-in db [:items id :done] (constantly done))))
 
 (rf/reg-event-db
  :set-docs
@@ -40,7 +43,6 @@
    (:text db)))
 
 (rf/reg-sub
- :items
+ :sorted-items
  (fn [db _]
-   (reverse (:items db))))
-
+   (map #(second %) (sort-by #((second %) :id) (:items db)))))
