@@ -5,7 +5,8 @@
             [material-ui-icons :as icons]))
 
 (defn render-item [{id :id text :text done :done :as item}]
-  [:div {:key id} 
+  [:div.item {:key id
+         :class (if done "done" "")} 
    [:> mui/Checkbox {:checked done
                      :on-change #(rf/dispatch [:set-item-done id %2])}]
    [:span.text text]])

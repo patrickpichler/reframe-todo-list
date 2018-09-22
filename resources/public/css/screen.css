@@ -7,3 +7,6 @@ nav {
     margin-bottom: 20px;
 }
 
+.item.done{
+  text-decoration: line-through;
+}
