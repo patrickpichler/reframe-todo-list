@@ -11,7 +11,7 @@
    [:> mui/AppBar {:position :static} 
     [:> mui/Toolbar[:> mui/Typography {:variant :title
                         :color :inherit} "Todo list"]]]
-   [views/home-page]])
+   [:div.content (views/home-page)]])
 
 ;; -------------------------
 ;; Initialize app
