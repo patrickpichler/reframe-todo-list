@@ -6,19 +6,20 @@
 
 (defn render-item [{id :id text :text done :done :as item}]
   [:div.item {:key id
-         :class (if done "done" "")} 
+              :class (if done "done" "")}
    [:> mui/Checkbox {:checked done
                      :on-change #(rf/dispatch [:set-item-done id %2])}]
    [:span.text text]])
 
 (defn render-input []
   (r/with-let [input-text (r/atom "")]
-    [:div [:input {:type "text"
-                   :value @input-text
-                   :on-change #(reset! input-text (-> % .-target .-value))}]
-     [:button {:on-click #(do (rf/dispatch [:add-item @input-text]
-                                           (reset! input-text ""))) }
-      "Add"]]))
+    [:div [:> mui/TextField {:margin :normal
+                             :value @input-text
+                             :on-change #(reset! input-text (-> % .-target .-value))}]
+     [:> mui/IconButton {:on-click #(do (rf/dispatch [:add-item @input-text]
+                                                     (reset! input-text "")))
+                         :disabled (clojure.string/blank? @input-text)}
+      [:> icons/Add]]]))
 
 (defn home-page []
   [:div.container
