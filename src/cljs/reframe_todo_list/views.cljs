@@ -4,12 +4,17 @@
             [material-ui :as mui]
             [material-ui-icons :as icons]))
 
-(defn render-item [{id :id text :text done :done :as item}]
-  [:div.item {:key id
-              :class (if done "done" "")}
-   [:> mui/Checkbox {:checked done
-                     :on-change #(rf/dispatch [:set-item-done id %2])}]
-   [:span.text text]])
+(defn render-item [item]
+  (let [show-delete (r/atom false)]
+    (fn [{id :id text :text done :done :as item}]
+      [:div.item {:class (if done "done" "")
+                  :on-mouse-over #(reset! show-delete true)
+                  :on-mouse-out #(reset! show-delete false)}
+       [:> mui/Checkbox {:checked done
+                         :on-change #(rf/dispatch [:set-item-done id %2])}]
+       [:span.text text]
+       [:> mui/IconButton {:class (if @show-delete "" "hidden")}
+        [:> icons/Add]]])))
 
 (defn render-input []
   (r/with-let [input-text (r/atom "")]
@@ -21,8 +26,16 @@
                          :disabled (clojure.string/blank? @input-text)}
       [:> icons/Add]]]))
 
+(defn counter-component [initial-value]
+  (let [counter (r/atom initial-value)]
+    (fn []
+      [:div
+       [:button {:on-click #(swap! counter inc)} @counter]])))
+
 (defn home-page []
   [:div.container
    (render-input)
    (when-let [items @(rf/subscribe [:sorted-items])]
-     [:div (map render-item items)])])
+     [:div (for [item items]
+             ^{:key (item :id)}
+             [render-item item])])])
