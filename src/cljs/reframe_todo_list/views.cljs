@@ -13,8 +13,9 @@
        [:> mui/Checkbox {:checked done
                          :on-change #(rf/dispatch [:set-item-done id %2])}]
        [:span.text text]
-       [:> mui/IconButton {:class (if @show-delete "" "hidden")}
-        [:> icons/Add]]])))
+       [:> mui/IconButton {:class (if @show-delete "" "hidden")
+                           :on-click #(rf/dispatch [:delete-item id])}
+        [:> icons/Delete]]])))
 
 (defn render-input []
   (r/with-let [input-text (r/atom "")]

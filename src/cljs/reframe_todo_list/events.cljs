@@ -7,8 +7,7 @@
 (rf/reg-event-db
  :initialize-db
  (fn [_ _]
-   (assoc {} :text "Hello world"
-          :last-item-id 1
+   (assoc {} :last-item-id 1
           :items {})))
 
 (rf/reg-event-db
@@ -24,24 +23,16 @@
    (update-in db [:items id :done] (constantly done))))
 
 (rf/reg-event-db
+ :delete-item
+ (fn [db [_ id]]
+   (update-in db [:items] dissoc id)))
+
+(rf/reg-event-db
  :set-docs
  (fn [db [_ docs]]
    (assoc db :docs docs)))
 
-(rf/reg-event-fx
- :fetch-docs
- (fn [_ _]
-   {:http {:url "/docs"
-           :method :get
-           :success-event [:set-docs]}}))
-
 ;;subscriptions
-
-(rf/reg-sub
- :text
- (fn [db _]
-   (:text db)))
-
 (rf/reg-sub
  :sorted-items
  (fn [db _]
