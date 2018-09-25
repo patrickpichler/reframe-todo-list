@@ -28,6 +28,11 @@
    (update-in db [:items] dissoc id)))
 
 (rf/reg-event-db
+ :update-item
+ (fn [db [_ id text]]
+   (update-in db [:items id :text] (constantly text))))
+
+(rf/reg-event-db
  :set-docs
  (fn [db [_ docs]]
    (assoc db :docs docs)))
