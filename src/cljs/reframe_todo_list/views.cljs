@@ -4,7 +4,7 @@
             [material-ui :as mui]
             [material-ui-icons :as icons]))
 
-(defn render-item [item]
+(defn item-view [item]
   (let [show-delete (r/atom false)]
     (fn [{id :id text :text done :done :as item}]
       [:div.item {:class (if done "done" "")
@@ -39,4 +39,4 @@
    (when-let [items @(rf/subscribe [:sorted-items])]
      [:div (for [item items]
              ^{:key (item :id)}
-             [render-item item])])])
+             [item-view item])])])
