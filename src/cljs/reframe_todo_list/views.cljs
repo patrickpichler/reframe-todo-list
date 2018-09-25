@@ -4,17 +4,17 @@
             [material-ui :as mui]
             [material-ui-icons :as icons]))
 
-(defn item-view [item]
+(defn item-view [props item]
   (let [show-delete (r/atom false)]
-    (fn [{id :id text :text done :done :as item}]
+    (fn [props {id :id text :text done :done :as item}]
       [:div.item {:class (if done "done" "")
                   :on-mouse-over #(reset! show-delete true)
                   :on-mouse-out #(reset! show-delete false)}
        [:> mui/Checkbox {:checked done
-                         :on-change #(rf/dispatch [:set-item-done id %2])}]
+                         :on-change #((props :on-check) id %2) }]
        [:span.text text]
        [:> mui/IconButton {:class (if @show-delete "" "hidden")
-                           :on-click #(rf/dispatch [:delete-item id])}
+                           :on-click #((props :on-delete) id)}
         [:> icons/Delete]]])))
 
 (defn item-input-component
@@ -43,4 +43,5 @@
    (when-let [items @(rf/subscribe [:sorted-items])]
      [:div (for [item items]
              ^{:key (item :id)}
-             [item-view item])])])
+             [item-view {:on-check #(rf/dispatch [:set-item-done %1 %2])
+                         :on-delete #(rf/dispatch [:delete-item %1])} item])])])
