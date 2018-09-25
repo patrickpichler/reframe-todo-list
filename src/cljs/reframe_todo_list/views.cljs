@@ -18,15 +18,15 @@
         [:> icons/Delete]]])))
 
 (defn item-input-component
-  ([] (item-input-component ""))
+  ([props] (item-input-component props ""))
 
-  ([initial-text]
+  ([props initial-text]
    (let [text (r/atom initial-text)]
      (fn []
        [:div [:> mui/TextField {:margin :normal
                                 :value @text
                                 :on-change #(reset! text (-> % .-target .-value))}]
-              [:> mui/IconButton {:on-click #(do (rf/dispatch [:add-item @text])
+              [:> mui/IconButton {:on-click #(do ((props :on-add) @text)
                                                  (reset! text initial-text))
                                   :disabled (clojure.string/blank? @text)}
                [:> icons/Add]]]))))
@@ -39,7 +39,7 @@
 
 (defn home-page []
   [:div.container
-   [item-input-component]
+   [item-input-component {:on-add #(rf/dispatch [:add-item %])}]
    (when-let [items @(rf/subscribe [:sorted-items])]
      [:div (for [item items]
              ^{:key (item :id)}
