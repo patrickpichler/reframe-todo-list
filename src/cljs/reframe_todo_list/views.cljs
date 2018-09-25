@@ -17,15 +17,19 @@
                            :on-click #(rf/dispatch [:delete-item id])}
         [:> icons/Delete]]])))
 
-(defn render-input []
-  (r/with-let [input-text (r/atom "")]
-    [:div [:> mui/TextField {:margin :normal
-                             :value @input-text
-                             :on-change #(reset! input-text (-> % .-target .-value))}]
-     [:> mui/IconButton {:on-click #(do (rf/dispatch [:add-item @input-text]
-                                                     (reset! input-text "")))
-                         :disabled (clojure.string/blank? @input-text)}
-      [:> icons/Add]]]))
+(defn item-input-component
+  ([] (item-input-component ""))
+
+  ([initial-text]
+   (let [text (r/atom initial-text)]
+     (fn []
+       [:div [:> mui/TextField {:margin :normal
+                                :value @text
+                                :on-change #(reset! text (-> % .-target .-value))}]
+              [:> mui/IconButton {:on-click #(do (rf/dispatch [:add-item @text])
+                                                 (reset! text initial-text))
+                                  :disabled (clojure.string/blank? @text)}
+               [:> icons/Add]]]))))
 
 (defn counter-component [initial-value]
   (let [counter (r/atom initial-value)]
@@ -35,7 +39,7 @@
 
 (defn home-page []
   [:div.container
-   (render-input)
+   [item-input-component]
    (when-let [items @(rf/subscribe [:sorted-items])]
      [:div (for [item items]
              ^{:key (item :id)}
