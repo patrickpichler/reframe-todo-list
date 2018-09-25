@@ -50,11 +50,6 @@
                             :disabled (clojure.string/blank? @text)}
          [:> icons/Add]]]))))
 
-(defn counter-component [initial-value]
-  (let [counter (r/atom initial-value)]
-    (fn []
-      [:div
-       [:button {:on-click #(swap! counter inc)} @counter]])))
 
 (defn home-page []
   [:div.container
