@@ -4,13 +4,18 @@
             [material-ui :as mui]
             [material-ui-icons :as icons]))
 
-(defn item-edit-view [props text]
-  (let [text (r/atom text)]
+(defn item-edit-view [{on-done :on-done :as props} initial-text]
+  (let [text (r/atom initial-text)]
     (fn []
       [:div
        [:> mui/TextField {:value @text
-                          :on-change #(reset! text (-> % .-target .-value))}]
-       [:> mui/IconButton {:on-click #((props :on-done) @text)}
+                          :auto-focus true
+                          :on-change #(reset! text (-> % .-target .-value))
+                          :on-key-down #(case (.-which %)
+                                          13 (on-done @text)
+                                          27 (on-done initial-text)
+                                          nil)}]
+       [:> mui/IconButton {:on-click #(on-done @text)}
         [:> icons/Done]]])))
 
 (defn item-view [props item]
@@ -28,12 +33,16 @@
                            :on-click #((props :on-delete) id)}
         [:> icons/Delete]]])))
 
-(defn item-component [props item]
+(defn item-component [{on-update :on-update
+                       on-delete :on-delete :as props} item]
   (let [editing? (r/atom false)]
-    (fn [props {text :text :as item}]
+    (fn [props {id :id text :text :as item}]
       [:div (if @editing?
               [item-edit-view {:on-done #(do (reset! editing? false)
-                                             ((props :on-update) %1))} text]
+                                             (println %1)
+                                             (if (clojure.string/blank? %1)
+                                               (on-delete id)
+                                               (on-update %1)))} text]
               [item-view (assoc props :on-start-editing #(reset! editing? true)) item])])))
 
 (defn item-input-component
@@ -49,7 +58,6 @@
                                            (reset! text initial-text))
                             :disabled (clojure.string/blank? @text)}
          [:> icons/Add]]]))))
-
 
 (defn home-page []
   [:div.container
