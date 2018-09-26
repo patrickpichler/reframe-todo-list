@@ -48,14 +48,20 @@
 (defn item-input-component
   ([props] (item-input-component props ""))
 
-  ([props initial-text]
-   (let [text (r/atom initial-text)]
+  ([{on-add :on-add :as :props} initial-text]
+   (let [text (r/atom initial-text)
+         add-action #(if (not (clojure.string/blank? @text))
+                           (do (on-add @text)
+                            (reset! text initial-text)))]
      (fn []
        [:div [:> mui/TextField {:margin :normal
                                 :value @text
+                                :on-key-down #(case (.-which %)
+                                                13 (add-action)
+                                                nil)
                                 :on-change #(reset! text (-> % .-target .-value))}]
-        [:> mui/IconButton {:on-click #(do ((props :on-add) @text)
-                                           (reset! text initial-text))
+
+        [:> mui/IconButton {:on-click add-action
                             :disabled (clojure.string/blank? @text)}
          [:> icons/Add]]]))))
 
