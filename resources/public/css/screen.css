@@ -13,6 +13,7 @@ nav {
 
 .item.done {
   text-decoration: line-through;
+  opacity: 0.5;
 }
 
 .hidden {
