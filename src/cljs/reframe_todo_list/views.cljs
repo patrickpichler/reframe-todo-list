@@ -22,6 +22,8 @@
   (let [show-delete (r/atom false)]
     (fn [props {id :id text :text done :done :as item}]
       [:div.item {:class (if done "done" "")
+                  :on-focus #(reset! show-delete true)
+                  :on-blur #(reset! show-delete false)
                   :on-mouse-over #(reset! show-delete true)
                   :on-mouse-out #(reset! show-delete false)}
        [:> mui/Checkbox {:checked done
