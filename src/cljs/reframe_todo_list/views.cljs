@@ -10,6 +10,7 @@
       [:div
        [:> mui/TextField {:value @text
                           :auto-focus true
+                          :on-blur #(on-done @text)
                           :on-change #(reset! text (-> % .-target .-value))
                           :on-key-down #(case (.-which %)
                                           13 (on-done @text)
@@ -29,9 +30,13 @@
        [:> mui/Checkbox {:checked done
                          :on-change #((props :on-check) id %2)}]
 
-       [:span.text {:on-click (props :on-start-editing)} text]
+       [:span.text {:tabindex "0"
+                    :on-key-down #(case (.-which %)
+                                    13 ((props :on-start-editing)))
+                    :on-click (props :on-start-editing)} text]
 
-       [:> mui/IconButton {:class (if @show-delete "" "hidden")
+       [:> mui/IconButton {:tabindex "1"
+                           :class (if @show-delete "" "hidden")
                            :on-click #((props :on-delete) id)}
         [:> icons/Delete]]])))
 
