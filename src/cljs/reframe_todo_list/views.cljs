@@ -30,12 +30,13 @@
        [:> mui/Checkbox {:checked done
                          :on-change #((props :on-check) id %2)}]
 
-       [:span.text {:tabindex "0"
+       [:span.text {:tabIndex "0"
                     :on-key-down #(case (.-which %)
-                                    13 ((props :on-start-editing)))
+                                    13 ((props :on-start-editing))
+                                    nil)
                     :on-click (props :on-start-editing)} text]
 
-       [:> mui/IconButton {:tabindex "1"
+       [:> mui/IconButton {:tabIndex "1"
                            :class (if @show-delete "" "hidden")
                            :on-click #((props :on-delete) id)}
         [:> icons/Delete]]])))
@@ -62,6 +63,7 @@
                             (reset! text initial-text)))]
      (fn []
        [:div [:> mui/TextField {:margin :normal
+                                :placeholder "Enter text here"
                                 :value @text
                                 :on-key-down #(case (.-which %)
                                                 13 (add-action)
